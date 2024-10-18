@@ -1,5 +1,5 @@
 // Load the dotfiles.
-require('dotenv').load();
+require('dotenv').config();
 
 var port = process.env.PORT || 3000;
 var redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379/0';
@@ -17,13 +17,17 @@ var cookieParser = require('cookie-parser');
 var Redis = require('ioredis');
 var passport = require('passport');
 var favicon = require('serve-favicon');
-var RedisStore = require('connect-redis')(expressSession);
+var RedisStore = require('connect-redis').default;
 
 //Initialize auth
 authentication(passport, adminUsername, adminPassword);
 
 //Connect to Redis
-var redis = new Redis(redisUrl);
+var redis = new Redis(redisUrl, {
+  tls: {
+    rejectUnauthorized: false
+  }
+});
 
 //Initialize the app
 var app = express();
